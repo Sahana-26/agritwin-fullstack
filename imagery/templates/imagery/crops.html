@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgriTWIN | Crops</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: #0f1c31;
+      --text: #e9f1ff;
+      --muted: #9db0cf;
+      --accent: #4dd4ac;
+      --accent-2: #67a8ff;
+      --border: rgba(158, 184, 220, 0.16);
+      --shadow: 0 20px 40px rgba(0,0,0,0.35);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background: radial-gradient(circle at top left, #12233e 0%, #09121f 45%, #050a12 100%);
+      color: var(--text);
+    }
+    a { color: inherit; text-decoration: none; }
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 30px; background: rgba(7, 14, 26, 0.88);
+      backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: 0.6px; font-size: 24px; }
+    .brand-logo { width: 80px; height: 50px; object-fit: contain; display: block; border-radius: 10px; }
+    .nav { display: flex; gap: 12px; flex-wrap: wrap; }
+    .nav a, .nav button { border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text); padding: 10px 16px; border-radius: 999px; font-size: 14px; cursor: pointer; }
+    .nav .primary { background: linear-gradient(135deg, rgba(77,212,172,0.18), rgba(103,168,255,0.18)); border-color: rgba(77,212,172,0.32); }
+    .page { width: min(1280px, calc(100% - 40px)); margin: 0 auto; padding: 30px 0 38px; }
+    .hero {
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      margin-bottom: 22px; padding: 28px; border-radius: 24px;
+      background: linear-gradient(180deg, rgba(15,28,49,0.9), rgba(8,16,29,0.92));
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+    }
+    .hero h1 { margin: 0 0 10px; font-size: 38px; }
+    .hero p { margin: 0; color: var(--muted); line-height: 1.7; max-width: 720px; }
+    .crop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .crop-card {
+      border-radius: 22px; overflow: hidden; border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(19,37,65,0.88), rgba(9,19,35,0.92));
+      box-shadow: var(--shadow); min-height: 260px; display: flex; flex-direction: column;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .crop-card:hover { transform: translateY(-4px); border-color: rgba(77,212,172,0.32); }
+    .crop-art {
+      height: 140px;
+      background: linear-gradient(135deg, rgba(77,212,172,0.38), rgba(103,168,255,0.24)), radial-gradient(circle at top right, rgba(255,255,255,0.18), transparent 48%), #163154;
+    }
+    .crop-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .crop-body h3 { margin: 0; font-size: 20px; }
+    .crop-body p { margin: 0; color: var(--muted); line-height: 1.7; font-size: 14px; flex: 1; }
+    .status { display: inline-flex; align-self: flex-start; padding: 7px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .status.active { background: rgba(77,212,172,0.12); color: #9ff1da; border: 1px solid rgba(77,212,172,0.24); }
+    .status.soon { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid var(--border); }
+    .card-link {
+      display: inline-flex; justify-content: center; align-items: center; padding: 11px 14px;
+      border-radius: 14px; border: 1px solid var(--border); font-weight: 700;
+      background: rgba(255,255,255,0.05);
+    }
+    .card-link.active { background: linear-gradient(135deg, rgba(77,212,172,0.18), rgba(103,168,255,0.18)); border-color: rgba(77,212,172,0.32); }
+    .footer { width: min(1280px, calc(100% - 40px)); margin: 0 auto; padding: 0 0 18px; text-align: right; color: rgba(233,241,255,0.62); font-size: 11px; }
+    @media (max-width: 1100px) { .crop-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 780px) {
+      .topbar {
+        padding: 12px 14px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .brand {
+        font-size: 20px;
+      }
+      .brand-logo {
+        width: 32px;
+        height: 32px;
+      }
+      .nav {
+        width: 100%;
+        gap: 8px;
+      }
+      .nav a,
+      .nav button {
+        flex: 1 1 calc(50% - 8px);
+        justify-content: center;
+        text-align: center;
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+      .page,
+      .footer {
+        width: calc(100% - 24px);
+      }
+      .page {
+        padding: 18px 0 26px;
+      }
+      .hero {
+        padding: 20px 18px;
+        border-radius: 20px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .hero h1 {
+        font-size: 30px;
+        line-height: 1.1;
+      }
+      .hero p {
+        font-size: 15px;
+        line-height: 1.65;
+      }
+      .crop-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .crop-card {
+        min-height: 0;
+      }
+      .crop-art {
+        height: 120px;
+      }
+      .crop-body {
+        padding: 16px;
+      }
+      .crop-body h3 {
+        font-size: 18px;
+      }
+      .footer {
+        text-align: center;
+        padding-bottom: 14px;
+      }
+    }
+    @media (max-width: 420px) {
+      .nav a,
+      .nav button {
+        flex-basis: 100%;
+      }
+      .page,
+      .footer {
+        width: calc(100% - 16px);
+      }
+      .hero {
+        padding: 18px 16px;
+      }
+      .hero h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><img class="brand-logo" src="{% static 'agsrt_logo.png' %}" alt="AGSRT logo" /><span>AgriTWIN</span></a>
+    <nav class="nav">
+      <a href="/">Home</a>
+      <a href="/#about">About Us</a>
+      <a href="/#contact">Contact</a>
+      <button class="primary" type="button" onclick="logoutOrLogin()" id="loginBtn">Sign In / Login</button>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div>
+        <h1>AgriTWIN for spatial farm planning and crop suitability.</h1>
+        <p>Start with coconut for the active workflow. The rest of the crop cards are kept ready as placeholders for future dashboards.</p>
+      </div>
+      <div class="status active" id="authStatus">Authenticated</div>
+    </section>
+
+    <section class="crop-grid">
+      <article class="crop-card">
+        <div class="crop-art"></div>
+        <div class="crop-body">
+          <span class="status active">Available now</span>
+          <h3>Coconut</h3>
+          <p>Open the current AgriTWIN dashboard with map analysis, seasonal charting, suitability layers, and inspection tools.</p>
+          <a class="card-link active" href="{% url 'coconut' %}">Open Dashboard</a>
+        </div>
+      </article>
+      <article class="crop-card"><div class="crop-art"></div><div class="crop-body"><span class="status soon">Coming soon</span><h3>Pepper</h3><p>Pepper-specific crop intelligence view can be connected here later.</p><span class="card-link">Dashboard pending</span></div></article>
+      <article class="crop-card"><div class="crop-art"></div><div class="crop-body"><span class="status soon">Coming soon</span><h3>Arecanut</h3><p>Future suitability and monitoring workflow for arecanut plantations.</p><span class="card-link">Dashboard pending</span></div></article>
+      <article class="crop-card"><div class="crop-art"></div><div class="crop-body"><span class="status soon">Coming soon</span><h3>Banana</h3><p>Yield support and land suitability insights for banana cultivation.</p><span class="card-link">Dashboard pending</span></div></article>
+      <article class="crop-card"><div class="crop-art"></div><div class="crop-body"><span class="status soon">Coming soon</span><h3>Paddy</h3><p>Water and field-condition dashboard can be linked for paddy later.</p><span class="card-link">Dashboard pending</span></div></article>
+      <article class="crop-card"><div class="crop-art"></div><div class="crop-body"><span class="status soon">Coming soon</span><h3>Maize</h3><p>Potential future module for crop stress, suitability, and advisory support.</p><span class="card-link">Dashboard pending</span></div></article>
+      <article class="crop-card"><div class="crop-art"></div><div class="crop-body"><span class="status soon">Coming soon</span><h3>Coffee</h3><p>Hill terrain suitability and seasonal vegetation workflow for coffee zones.</p><span class="card-link">Dashboard pending</span></div></article>
+      <article class="crop-card"><div class="crop-art"></div><div class="crop-body"><span class="status soon">Coming soon</span><h3>Cashew</h3><p>Space reserved for future cashew crop intelligence dashboard.</p><span class="card-link">Dashboard pending</span></div></article>
+    </section>
+  </main>
+
+  <footer class="footer">Aavakaza Geoscience and Research Technologies</footer>
+
+  <script>
+    const isAuthed = sessionStorage.getItem('agritwinAuth') === 'true';
+    const authStatus = document.getElementById('authStatus');
+    const loginBtn = document.getElementById('loginBtn');
+    if (!isAuthed) {
+      authStatus.textContent = 'Guest mode';
+      authStatus.className = 'status soon';
+      loginBtn.textContent = 'Go to Login';
+    } else {
+      const user = sessionStorage.getItem('agritwinUser') || 'admin';
+      authStatus.textContent = 'Signed in as ' + user;
+      loginBtn.textContent = 'Logout';
+    }
+    function logoutOrLogin() {
+      if (sessionStorage.getItem('agritwinAuth') === 'true') {
+        sessionStorage.removeItem('agritwinAuth');
+        sessionStorage.removeItem('agritwinUser');
+        window.location.href = '/';
+      } else {
+        window.location.href = '/';
+      }
+    }
+  </script>
+</body>
+</html>
