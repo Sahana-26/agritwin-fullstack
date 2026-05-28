@@ -1,116 +1,141 @@
-# AgriTwin Seasonal + Future Analysis Dashboard
+# AgriTwin Platform (AI + Full Stack Agriculture Intelligence System)
 
-This version of the project is updated to support:
+AgriTwin is a full-stack web platform that combines machine learning, data analytics, and intelligent farm management tools to support crop monitoring and yield prediction.
 
-- **Local DEM support from `dem.tif` placed beside `aoi.geojson`**
-- **Interactive frontend dashboard** with linked map + charts
-- **Interactive charts** for analysis outputs using Plotly
-- **Leaflet overlay controls** for thematic layers and RGB context
-- **Chart API** for histogram, class-share pie, trend line, and theme-comparison bar charts
+The system is built using a modular backend architecture with REST APIs, ML inference services, and an interactive dashboard for visualization and decision-making.
 
-## Main Outputs
+The same backend APIs are also consumed by a **mobile application**, making the system cross-platform.
 
-- NDVI
-- NDMI
-- AWEI
-- NDVI anomaly
-- Water retention opportunity (WaterLite)
-- Coconut suitability
-- Pepper suitability
-- Eco-stay suitability
-- Sandalwood suitability
-- Rainwater harvesting suitability
-- DEM
-- Slope
-- All-weather radar composite
+---
 
-## DEM Requirement
+## Key Features
 
-This project is now configured to **prioritize a local file named `dem.tif`** in the project root.
+### AI & Machine Learning
 
-Expected structure:
+* Crop disease prediction from leaf images
+* Yield prediction based on soil and environmental parameters
+* Recommendation system for crop health and severity analysis
+* Prediction history tracking for farmers and plots
 
-```text
-project_root/
-  aoi.geojson
-  dem.tif
-  manage.py
-  ...
-```
+### Data & Analytics
 
-If `dem.tif` is not present, the code can optionally fall back to the Planetary Computer DEM when `DEM_SOURCE_FALLBACK_TO_STAC=True`.
+* Crop performance tracking over time
+* Yield history and trend analysis
+* Farm-level summary and insights
+* Interactive charts (trend, bar, pie, histogram)
 
-## Dashboard Features
+### Full Stack System
 
-- Historical and future run switching
-- Interactive thematic map overlays
-- Opacity control for raster overlay
-- RGB toggle for optical context
-- Map click inspection for parcel diagnostics
-- Interactive **line chart** for trend analysis
-- Interactive **bar chart** for theme comparison
-- Interactive **pie chart** for current layer class share
-- Interactive **histogram** for active layer value distribution
-- Clicking a **bar** changes the active theme
-- Clicking a **trend point** loads that year/run
+* REST API-based backend using Django REST Framework
+* Web dashboard for farm management and monitoring
+* Mobile application support using same APIs
+* Real-time data visualization
+* Secure authentication and role-based access
+
+### Farm Management System
+
+* Farmer profile management
+* Farm plot creation and tracking
+* Crop profiling per plot
+* Data collection points for monitoring farm conditions
+
+---
+
+## Machine Learning Modules
+
+### Crop Disease Prediction
+
+* Input: Crop type + leaf image
+* Output:
+
+  * Disease classification
+  * Confidence score
+  * Severity level
+  * Recommendation for treatment
+  * Yield impact estimation
+
+### Yield Prediction
+
+* Input:
+
+  * Soil parameters
+  * Weather conditions
+  * Fertilizer and irrigation data
+* Output:
+
+  * Predicted yield (kg/ha)
+* Stores prediction history for analytics
+
+---
+
+## System Architecture
+
+* Backend: Django + Django REST Framework
+* Database: PostgreSQL
+* ML Inference Layer: Integrated model services inside backend APIs
+* Frontend: Interactive web dashboard (JavaScript-based UI)
+* Mobile: APIs consumed by mobile application
+* Visualization: Plotly charts and dynamic UI components
+* Authentication: Secure login system with user-based access
+
+---
 
 ## API Endpoints
 
-- `/api/dashboard/config/`
-- `/api/analysis/select/`
-- `/api/analysis/<run_id>/`
-- `/api/analysis/<run_id>/charts/?layer_name=ndvi`
-- `/api/analysis/<run_id>/inspect/?lat=..&lng=..`
-- `/api/analysis/<run_id>/layers/<layer_name>/image.png`
-- `/api/trends/?mode=historical&season=Monsoon&layer_name=ndvi`
+### Farm & User Management
 
-## Setup
+* `/api/farmers/me/`
+* `/api/plots/`
+* `/api/crops/`
+* `/api/summary/`
 
-1. Start PostgreSQL + PostGIS
+### Machine Learning APIs
 
-```bash
+* `POST /api/predict/` → Crop disease prediction
+* `POST /api/yield/predict/` → Yield prediction
+
+### Analytics APIs
+
+* `/api/yield/history/`
+* `/api/trends/`
+* `/api/dashboard/config/`
+
+### Visualization APIs
+
+* `/api/analysis/<run_id>/charts/`
+* `/api/analysis/<run_id>/inspect/`
+
+---
+
+## Setup Instructions
+
+### 1. Start Database
+
+```
 docker compose up -d
 ```
 
-2. Install dependencies
+### 2. Install Dependencies
 
-```bash
+```
 pip install -r requirements.txt
 ```
 
-3. Make sure the following files are present in the project root:
+### 3. Run Migrations
 
-- `aoi.geojson`
-- `dem.tif`
-
-4. Configure environment values in `.env` if needed.
-
-5. Run migrations
-
-```bash
+```
 python manage.py migrate
 ```
 
-6. Load runs
+### 4. Load Data
 
-```bash
+```
 python manage.py backfill_historical
 python manage.py refresh_future
 ```
 
-7. Start the app
+### 5. Run Server
 
-```bash
+```
 python manage.py runserver
 ```
-
-## Notes
-
-- Rasters are stored in PostgreSQL via PostGIS `RasterField`.
-- The dashboard renders raster overlays as PNG images directly from the database.
-- Terrain analysis uses the local `dem.tif` when available.
-- The charts are driven from stored raster statistics and per-layer raster distributions.
-
-
-
-
